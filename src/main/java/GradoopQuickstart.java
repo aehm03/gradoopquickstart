@@ -24,8 +24,8 @@ public class GradoopQuickstart {
       "(p2)-[:friend]->(p3:Person {name: \"Jacob\", age: 27})-[:friend]->(p2) " +
       "(p3)-[:friend]->(p4:Person{name: \"Marc\", age: 40})-[:friend]->(p3) " +
       "(p4)-[:friend]->(p5:Person{name: \"Sara\", age: 33})-[:friend]->(p4) " +
-      "(p5)-[:friend]->(p4)-[:friend]->(p5) " + "(c1:Corporation {name: \"Acme Corp\"}) " +
-      "(c2:Corporation {name: \"Globex Inc.\"}) " + "(p5)-[:worksAt]->(c1) " +
+      "(p5)-[:friend]->(p4)-[:friend]->(p5) " + "(c1:company {name: \"Acme Corp\"}) " +
+      "(c2:company {name: \"Globex Inc.\"}) " + "(p5)-[:worksAt]->(c1) " +
       "(p3)-[:worksAt]->(c1) " + "(p2)-[:worksAt]->(c1) " + "(p1)-[:worksAt]->(c2) " +
       "(p4)-[:worksAt]->(c2) " + "] " +
       "n2[(p4)-[:friend]->(p6:Person {name: \"Paul\", age: 37})-[:friend]->(p4) " +
