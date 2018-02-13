@@ -133,14 +133,12 @@ env.execute();
 Let's try a slightly more complicated example. How can we transform our current input graphs to 
 achieve two graphs that show the members of each company? At first we need to combine the existing 
 graphs to a single graph.In the second step we search for graphs that match a current 
-pattern, persons that work at a company. This can be achieved with a [Cypher](https://neo4j
-.com/developer/cypher-query-language/), a query language for
+pattern, persons that work at a company. This can be achieved with a [Cypher](https://neo4j.com/developer/cypher-query-language/), a query language for
  graphs: 
 ```
 MATCH (p:Person)-[:worksAt]->(c:Company)
 ```
-You can read more about the implementation of Cypher in Gradoop [here](https://dbs.uni-leipzig
-.de/file/GRADES17_Cypher_in_Gradoop.pdf).
+You can read more about the implementation of Cypher in Gradoop [here](https://dbs.uni-leipzig.de/file/GRADES17_Cypher_in_Gradoop.pdf).
 
 Running this query gives us a collection of logical graphs each consisting of a person pointing 
 to a company. To get our result we reduce the collection to a single graph and split this graph 
