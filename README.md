@@ -29,7 +29,7 @@ Now maven can resolve the gradoop dependency:
   <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
-You will also need Apache Flink 1.3.1.
+You also need Apache Flink (version 1.3.1.):
 ```
 <dependency>
     <groupId>org.apache.flink</groupId>
@@ -42,9 +42,9 @@ You will also need Apache Flink 1.3.1.
     <version>1.3.1</version>
 </dependency>
 ```
-Now you are able to run your first gradoop application.
+Now you are able to run your gradoop application.
 
-### Creating a sample Graph
+### Creating an example graph
 In the following examples we will work with a rather simple graph, so each operation and its 
 results can easily be understood and visualized. Consider the following graph collections that consists of three logical graphs, describing two groups of friends.
 
@@ -53,6 +53,8 @@ There are also two types of edges: _friend_, denoting that a given _Person_ is f
 another, and _worksAt_, a relation between a _Person_ and a _Company_. 
 In the Extended Property Graph Model (EPGM), these types are called _labels_.
 
+![example graph](images/example-graph.png)
+
 Each _Person_ has two characteristics a name and and an age, while our companys onyle have a
  name as a property. These key-value pairs are the _properties_ of a graph element. Note that 
  there is no schema involved that forces a certain type of graph element to have specific values.
@@ -60,20 +62,18 @@ Each _Person_ has two characteristics a name and and an age, while our companys 
  the company or a person with no key-value pair age. 
  
  Both groups of friends make up a separate graph, those are called _logical graph_ in EPGM. Graph
-  elements can belong to more than a single logical graph Marc and Jacob belong to both groups 
-  and since in each group there is at least one person working at each company, they also belong 
+  elements can belong to more than one logical graph. The vertices Marc and Jacob belong to both 
+  groups  and since in each group there is at least one person working at each company, they also belong 
   to both logical graphs.  
  
  A set of logical graphs is called a _graph collection_. That's everything we need to know about 
  EPGM for now, if you want to gain a deeper understanding, have a look at the [paper](http://dbs.uni-leipzig.de/file/EPGM.pdf).    
 
-TODO: insert image
 
 To create the example data we use the GDL format, which is easy to understand and allows 
 to build small graph collections from strings. Basically a vertex is given by a pair of 
 parentheses `()`and edges are represented with arrow-like symbols `-[]->`. All 
-graph elements can be referred to by a variable name, given a label and values in a JSON-like 
-notation. Let's have a look at the source code:
+graph elements can be referred to by a variable name, given a label and key-value pairs. Let's have a look at the source code:
 
 ```java 
 String graph = "g1[(p1:Person {name: \"Bob\", age: 24})-[:friend]->" +
@@ -122,13 +122,11 @@ public static void writeAsDotGraph(String path, LogicalGraph graph) throws Excep
 
 The remaining set operators combination, exclusion and equality are straightforward to
  understand from here. You can try them out and observe the results with the method given above. 
- Note that in a Flink environment you always need to include a call to the execute method to 
- execute the program. 
-```java
-env.execute();
-```
 
 ### Creating a company based graph 
+
+
+// TODO change to simpler operations
 
 Let's try a slightly more complicated example. How can we transform our current input graphs to 
 achieve two graphs that show the members of each company? At first we need to combine the existing 
@@ -143,15 +141,16 @@ You can read more about the implementation of Cypher in Gradoop [here](https://d
 Running this query gives us a collection of logical graphs each consisting of a person pointing 
 to a company. To get our result we reduce the collection to a single graph and split this graph 
 by connected components. 
-// TODO explain reduce gelly and 
+// TODO explain reduce and cc/gelly  
 
 Although we could use a range of different operators and got the desired result, this is probably
- not the most concise an efficient way. Can you come up with other and/or a simple solutions? 
+ not the most concise an efficient way. Can you come up with other and/or a simpler solutions? 
+ You could start by using the subgraph operator instead of a cypher query.
 
 
 
 ### Next Steps 
 
 * Review the [Examples](https://github.com/dbs-leipzig/gradoop/tree/master/gradoop-examples)
-* Importing Data in Gradoop
-* ...
+* Learn about advanced methods e.g. Cypher Queries, ...
+* How to import Data from relational Datasources
