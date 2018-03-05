@@ -6,27 +6,12 @@ uss some basic operators on an example graph You can find the whole sourcecode o
 ### Setup
 
 The easiest way to use gradoop in your project is via maven. Add the following repository to your project file:
-```
-<repositories>
-  <repository>
-    <id>dbleipzig</id>
-    <name>Database Group Leipzig University</name>
-    <url>https://wdiserv1.informatik.uni-leipzig.de:443/archiva/repository/dbleipzig/</url>
-    <releases>
-      <enabled>true</enabled>
-    </releases>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-   </repository>
-</repositories>
-```
-Now maven can resolve the gradoop dependency:
+
 ```
 <dependency>
-  <groupId>org.gradoop</groupId>
-  <artifactId>gradoop-flink</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+    <groupId>org.gradoop</groupId>
+    <artifactId>gradoop-flink</artifactId>
+    <version>0.3.2</version>
 </dependency>
 ```
 You also need Apache Flink (version 1.3.1.):
@@ -76,29 +61,29 @@ parentheses `()`and edges are represented with arrow-like symbols `-[]->`. All
 graph elements can be referred to by a variable name, given a label and key-value pairs. Let's have a look at the source code:
 
 ```java 
-String graph = "g1[(p1:Person {name: \"Bob\", age: 24})-[:friend]->" +
-    "(p2:Person{name: \"Alice\", age: 30})-[:friend]->(p1)" +
-    "(p2)-[:friend]->(p3:Person {name: \"Jacob\", age: 27})-[:friend]->(p2) " +
-    "(p3)-[:friend]->(p4:Person{name: \"Marc\", age: 40})-[:friend]->(p3) " +
-    "(p4)-[:friend]->(p5:Person{name: \"Sara\", age: 33})-[:friend]->(p4) " +
-    "(p5)-[:friend]->(p4)-[:friend]->(p5) " + "(c1:company {name: \"Acme Corp\"}) " +
-    "(c2:company {name: \"Globex Inc.\"}) " + "(p5)-[:worksAt]->(c1) " +
-    "(p3)-[:worksAt]->(c1) " + "(p2)-[:worksAt]->(c1) " + "(p1)-[:worksAt]->(c2) " +
-    "(p4)-[:worksAt]->(c2) " + "] " +
-    "g2[(p4)-[:friend]->(p6:Person {name: \"Paul\", age: 37})-[:friend]->(p4) " +
-    "(p3)-[:friend]->(p7:Person {name: \"Mike\", age: 23})-[:friend]->(p3) " +
-    "(p6)-[:friend]->(p7)-[:friend]->(p6) " +
-    "(p8:Person {name: \"Jil\", age: 22})-[:friend]->(p7)-[:friend]->(p8) " +
-    "(p6)-[:worksAt]->(c2) " + "(p7)-[:worksAt]->(c2) " + "(p8)-[:worksAt]->(c1) " + "]";
-      
-    FlinkAsciiGraphLoader loader = new FlinkAsciiGraphLoader(cfg);
-    loader.initDatabaseFromString(graph);
-      
-    LogicalGraph g1 = loader.getLogicalGraphByVariable("g1");
-    LogicalGraph g2 = loader.getLogicalGraphByVariable("g2");
+String graph = "g1:graph[" + 
+  "(p1:Person {name: \"Bob\", age: 24})-[:friendsWith]->" +
+  "(p2:Person{name: \"Alice\", age: 30})-[:friendsWith]->(p1)" +
+  "(p2)-[:friendsWith]->(p3:Person {name: \"Jacob\", age: 27})-[:friendsWith]->(p2) " +
+  "(p3)-[:friendsWith]->(p4:Person{name: \"Marc\", age: 40})-[:friendsWith]->(p3) " +
+  "(p4)-[:friendsWith]->(p5:Person{name: \"Sara\", age: 33})-[:friendsWith]->(p4) " +
+  "(c1:Company {name: \"Acme Corp\"}) " +
+  "(c2:Company {name: \"Globex Inc.\"}) " +
+  "(p2)-[:worksAt]->(c1) " +
+  "(p4)-[:worksAt]->(c1) " +
+  "(p5)-[:worksAt]->(c1) " +
+  "(p1)-[:worksAt]->(c2) " +
+  "(p3)-[:worksAt]->(c2) " + "] " +
+  "g2:graph[" +
+  "(p4)-[:friendsWith]->(p6:Person {name: \"Paul\", age: 37})-[:friendsWith]->(p4) " +
+  "(p6)-[:friendsWith]->(p7:Person {name: \"Mike\", age: 23})-[:friendsWith]->(p6) " +
+  "(p8:Person {name: \"Jil\", age: 32})-[:friendsWith]->(p7)-[:friendsWith]->(p8) " +
+  "(p6)-[:worksAt]->(c2) " +
+  "(p7)-[:worksAt]->(c2) " +
+  "(p8)-[:worksAt]->(c1) " + "]";
 ```
-Note that the edges of Type friend in our example are undirected, to model this property we use 
-two mirrored directed edges.  
+Note that the edges of Type friend in our example are undirected, to model this property we 
+have to use two mirrored directed edges.  
 You can find detailed information about GDL on [github](https://github.com/s1ck/gdl).
 Obviously real world data won't be available in this format. We will cover data importing 
 later on and use this example to familiarize  with the gradoop operators.
@@ -107,50 +92,56 @@ later on and use this example to familiarize  with the gradoop operators.
 With the overlap operator we can find all elements that are contained in both our logical 
 graphs:
 ```java
+LogicalGraph n1 = loader.getLogicalGraphByVariable("g1");
+LogicalGraph n2 = loader.getLogicalGraphByVariable("g2");
 LogicalGraph overlap = n2.overlap(n1);
+DataSink sink2 = new DOTDataSink("out/overlap.dot", true);
+overlap.writeTo(sink2);
 ```
-To review and validate the results we will use the `DOTDataSink` to write the result graphs in 
+To review and validate the results we use the `DOTDataSink` to write the result graphs in 
 the dot format which can be compiled into an image with [Graphviz](https://www.graphviz.org/). 
-```java
-public static void writeAsDotGraph(String path, LogicalGraph graph) throws Exception{
-  DataSink sink = new DOTDataSink("path", true);
-  graph.writeTo(sink);
-}
-```
 
-// TODO result image
+![overlap graph](images/overlap.png)
 
+The overlap graphs contains all elements that are present in both logical graphs. The fact that 
+even Marcs work relation with Acme Corp. is not part of the overlap may come as a surprise since 
+both vertices are present. However, notice the respective edge was only defined in g1.
 The remaining set operators combination, exclusion and equality are straightforward to
  understand from here. You can try them out and observe the results with the method given above. 
 
 ### Creating a company based graph 
 
-
-// TODO change to simpler operations
-
 Let's try a slightly more complicated example. How can we transform our current input graphs to 
 achieve two graphs that show the members of each company? At first we need to combine the existing 
-graphs to a single graph.In the second step we search for graphs that match a current 
-pattern, persons that work at a company. This can be achieved with a [Cypher](https://neo4j.com/developer/cypher-query-language/), a query language for
- graphs: 
+graphs to a single graph and use the `subgraph` operator to filter out all non work-related edges:
+```java
+LogicalGraph workGraph = n1.combine(n2)
+      .subgraph(
+        v -> true,
+        e -> e.getLabel().equals("worksAt"));
 ```
-MATCH (p:Person)-[:worksAt]->(c:Company)
+
+Now we want to find all parts of our graph that form a connected component. To achieve this we 
+can use the `WeaklyConnectedComponents` algorithm from the [Flink Gelly library](https://flink
+.apache.org/news/2015/08/24/introducing-flink-gelly.html) which is available in gradoop.  
+```java
+WeaklyConnectedComponents weaklyConnectedComponents = new WeaklyConnectedComponents(10);
+GraphCollection components = weaklyConnectedComponents.execute(workGraph);
+
+DataSink sink3 = new DOTDataSink("out/workspace.dot", true);
+components.writeTo(sink3);
 ```
-You can read more about the implementation of Cypher in Gradoop [here](https://dbs.uni-leipzig.de/file/GRADES17_Cypher_in_Gradoop.pdf).
 
-Running this query gives us a collection of logical graphs each consisting of a person pointing 
-to a company. To get our result we reduce the collection to a single graph and split this graph 
-by connected components. 
-// TODO explain reduce and cc/gelly  
+Using the datasource again, we can validate our results.
 
-Although we could use a range of different operators and got the desired result, this is probably
- not the most concise an efficient way. Can you come up with other and/or a simpler solutions? 
- You could start by using the subgraph operator instead of a cypher query.
+![workspace graph](images/workspace.png)
 
+
+Congratulations, you solved your first graph processing problem with gradoop. 
 
 
 ### Next Steps 
 
-* Review the [Examples](https://github.com/dbs-leipzig/gradoop/tree/master/gradoop-examples)
+* Review the [examples](https://github.com/dbs-leipzig/gradoop/tree/master/gradoop-examples)
 * Learn about advanced methods e.g. Cypher Queries, ...
-* How to import Data from relational Datasources
+* How to import data from different sources
