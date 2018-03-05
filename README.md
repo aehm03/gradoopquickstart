@@ -122,8 +122,7 @@ LogicalGraph workGraph = n1.combine(n2)
 ```
 
 Now we want to find all parts of our graph that form a connected component. To achieve this we 
-can use the `WeaklyConnectedComponents` algorithm from the [Flink Gelly library](https://flink
-.apache.org/news/2015/08/24/introducing-flink-gelly.html) which is available in gradoop.  
+can use the `WeaklyConnectedComponents` algorithm from the [Flink Gelly library](https://flink.apache.org/news/2015/08/24/introducing-flink-gelly.html) which is available in gradoop.  
 ```java
 WeaklyConnectedComponents weaklyConnectedComponents = new WeaklyConnectedComponents(10);
 GraphCollection components = weaklyConnectedComponents.execute(workGraph);
