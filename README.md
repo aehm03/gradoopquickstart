@@ -83,8 +83,7 @@ String graph = "g1:graph[" +
   "(p8)-[:worksAt]->(c1) " + "]";
 ```
 Note that the edges of Type friend in our example are undirected, to model this property we 
-have to use two mirrored directed edges.  
-You can find detailed information about GDL on [github](https://github.com/s1ck/gdl).
+have to use two mirrored directed edges. You can find detailed information about GDL on [github](https://github.com/s1ck/gdl).
 Obviously real world data won't be available in this format. We will cover data importing 
 later on and use this example to familiarize  with the gradoop operators.
 
@@ -131,7 +130,7 @@ DataSink sink3 = new DOTDataSink("out/workspace.dot", true);
 components.writeTo(sink3);
 ```
 
-Using the datasource again, we can validate our results.
+Using the datasink again, we can validate our results.
 
 ![workspace graph](images/workspace.png)
 
