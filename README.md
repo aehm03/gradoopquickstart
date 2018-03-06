@@ -40,7 +40,7 @@ In the Extended Property Graph Model (EPGM), these types are called _labels_.
 
 ![example graph](images/example-graph.png)
 
-Each _Person_ has two characteristics a name and and an age, while our companys onyle have a
+Each _Person_ has two characteristics a name and and an age, while our companies only have a
  name as a property. These key-value pairs are the _properties_ of a graph element. Note that 
  there is no schema involved that forces a certain type of graph element to have specific values.
  E.g. there could be a third company vertex which also holds information about the size of 
@@ -83,9 +83,12 @@ String graph = "g1:graph[" +
   "(p8)-[:worksAt]->(c1) " + "]";
 ```
 Note that the edges of Type friend in our example are undirected, to model this property we 
-have to use two mirrored directed edges. You can find detailed information about GDL on [github](https://github.com/s1ck/gdl).
-Obviously real world data won't be available in this format. We will cover data importing 
-later on and use this example to familiarize  with the gradoop operators.
+have to use two mirrored directed edges. You can find detailed information about GDL on [github](https://github.com/s1ck/gdl). GDL is *not* an input format for large scale graphs (as it 
+generates a graph/collection single threaded) and real world data won't be available in this 
+format. However, it is useful to build and evaluate examples like this on they fly and to 
+familiarize  with the gradoop operators. For the import of real and/or large data sets, the [CSV](https://github.com/dbs-leipzig/gradoop/blob/master/gradoop-flink/src/main/java/org/gradoop/flink/io/impl/csv/CSVDataSource.java) 
+and [JSON](https://github.com/dbs-leipzig/gradoop/blob/master/gradoop-flink/src/main/java/org/gradoop/flink/io/impl/json/JSONDataSource.java) data sources are more suitable. You can also 
+check out the [tutorial]() on data import.
 
 ### Graph Operators
 With the overlap operator we can find all elements that are contained in both our logical 
