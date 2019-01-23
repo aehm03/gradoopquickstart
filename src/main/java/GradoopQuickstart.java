@@ -47,7 +47,7 @@ public class GradoopQuickstart {
 
     GraphCollection c1 = loader.getGraphCollectionByVariables("g1", "g2");
     DataSink sink1 = new DOTDataSink("out/input.dot", true);
-    c1.writeTo(sink1);
+    c1.writeTo(sink1, true);
 
 
     // OVERLAP
@@ -55,7 +55,7 @@ public class GradoopQuickstart {
     LogicalGraph n2 = loader.getLogicalGraphByVariable("g2");
     LogicalGraph overlap = n2.overlap(n1);
     DataSink sink2 = new DOTDataSink("out/overlap.dot", true);
-    overlap.writeTo(sink2);
+    overlap.writeTo(sink2, true);
 
     // WORKS AT
     LogicalGraph workGraph = n1.combine(n2)
@@ -67,7 +67,7 @@ public class GradoopQuickstart {
     GraphCollection components = weaklyConnectedComponents.execute(workGraph);
 
     DataSink sink3 = new DOTDataSink("out/workspace.dot", true);
-    components.writeTo(sink3);
+    components.writeTo(sink3, true);
 
     env.execute();
   }
